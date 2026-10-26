@@ -1,7 +1,6 @@
 .git
 .gitignore
 *.zip
-*.gitbundle
 config.php
 storage/*
 !storage/.htaccess
