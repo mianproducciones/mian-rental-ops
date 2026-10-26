@@ -1,0 +1,65 @@
+databases:
+  - name: mian-rental-ops-db
+    plan: basic-256mb
+    region: frankfurt
+    postgresMajorVersion: "18"
+    ipAllowList: []
+
+services:
+  - type: web
+    name: mian-rental-ops
+    runtime: docker
+    plan: starter
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeployTrigger: commit
+    preDeployCommand: php cli/migrate.php && php cli/bootstrap_owner.php
+    healthCheckPath: /health.php
+    domains:
+      - rental.mianproducciones.com
+    disk:
+      name: mian-rental-storage
+      mountPath: /var/www/html/storage
+      sizeGB: 5
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mian-rental-ops-db
+          property: connectionString
+      - key: APP_NAME
+        value: Mian Rental Ops
+      - key: APP_BASE_URL
+        value: https://rental.mianproducciones.com
+      - key: APP_TIMEZONE
+        value: Europe/Madrid
+      - key: APP_DEBUG
+        value: "0"
+      - key: OWNER_COMPANY
+        value: Mian Producciones
+      - key: OWNER_NAME
+        value: Administrador
+      - key: OWNER_EMAIL
+        sync: false
+      - key: OWNER_PASSWORD
+        sync: false
+      - key: MAIL_FROM
+        value: no-reply@mianproducciones.com
+      - key: MAIL_FROM_NAME
+        value: Mian Rental Ops
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_STARTER_MONTHLY
+        sync: false
+      - key: STRIPE_STARTER_YEARLY
+        sync: false
+      - key: STRIPE_PRO_MONTHLY
+        sync: false
+      - key: STRIPE_PRO_YEARLY
+        sync: false
+      - key: STRIPE_ENTERPRISE_MONTHLY
+        sync: false
+      - key: STRIPE_ENTERPRISE_YEARLY
+        sync: false
