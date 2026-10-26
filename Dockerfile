@@ -29,3 +29,20 @@ RUN rm -rf /tmp/mian-app \
 EXPOSE 10000
 ENTRYPOINT ["/var/www/html/docker/entrypoint.sh"]
 CMD ["apache2-foreground"]
+
+# MRO_BUILD_DIAGNOSTIC - temporary, prints only non-secret setup files
+RUN echo "=== MRO FILES ===" \
+ && find /var/www/html -maxdepth 2 -type f | sort \
+ && echo "=== CONFIG SAMPLE ===" \
+ && (sed -n '1,220p' /var/www/html/config.sample.php 2>/dev/null || true) \
+ && echo "=== INSTALL ===" \
+ && (sed -n '1,260p' /var/www/html/install.php 2>/dev/null || true) \
+ && echo "=== BOOTSTRAP ===" \
+ && (sed -n '1,320p' /var/www/html/lib/bootstrap.php 2>/dev/null || true) \
+ && echo "=== MIGRATE ===" \
+ && (sed -n '1,220p' /var/www/html/cli/migrate.php 2>/dev/null || true) \
+ && echo "=== OWNER ===" \
+ && (sed -n '1,260p' /var/www/html/cli/bootstrap_owner.php 2>/dev/null || true) \
+ && echo "=== ENTRYPOINT ===" \
+ && (sed -n '1,220p' /var/www/html/docker/entrypoint.sh 2>/dev/null || true) \
+ && echo "=== END MRO BUILD DIAGNOSTIC ==="
